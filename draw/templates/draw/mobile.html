@@ -17,8 +17,12 @@
 </head>
 <body class="text-center">  
     <main class="form-signin">
-        <div class="alert alert-success alert-dismissible fade" role="alert" id="alert">
+        <div class="alert alert-success alert-dismissible fade" role="alert" id="alert-success">
             <strong>Submitted!</strong> You should be able to see your response on the screen
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div class="alert alert-danger alert-dismissible fade" role="alert" id="alert-error">
+            Please fill out the name and message fields
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
         <img class="mb-4" src="{% static 'draw/assets/summer.svg' %}" alt="" width="100">
@@ -40,7 +44,8 @@
     var socket = new WebSocket(
         'ws://' + window.location.host + '/ws/draw');
 
-    $("#alert").hide();
+    $("#alert-success").hide();
+    $("#alert-error").hide()
 
     $("#submit").click(function() {
         var name = $("#Name").val();
@@ -53,8 +58,12 @@
             socket.send(JSON.stringify(message));
             $("#Name").val('');
             $("#Plans").val('');
-            $("#alert").fadeTo(2000, 500).slideUp(500, function() {
-                $("#alert").slideUp(500);
+            $("#alert-success").fadeTo(2000, 500).slideUp(500, function() {
+                $("#alert-success").slideUp(500);
+            });
+        } else {
+            $("#alert-error").fadeTo(2000, 500).slideUp(500, function() {
+                $("#alert-error").slideUp(500);
             });
         }
     })
