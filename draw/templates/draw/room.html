@@ -19,6 +19,7 @@
     <canvas id="myCanvas" width="750px" height="750px"></canvas>
 </body>
 <script>
+
     // setting up the canvas and one paper tool
     var canvas = document.getElementById('myCanvas');
     paper.setup(canvas);
@@ -27,55 +28,42 @@
     var uid = Date.now() % 10000;
     var myPath = new paper.Path()
     paths[uid] = myPath;
-
     const strokeColors = ["red", "blue", "green", "black", "purple", "pink", "orange", "yellow"];
     const chosenColor = strokeColors[Math.floor(Math.random() * 8)];
     myPath.strokeColor = chosenColor;
 
     // getting the URL (you may want to use for Exercise 3)
     var url = window.location.href;
-    var isSmall;
-    if (url.includes("small")) {
-        isSmall = true;
-    } else {
-        isSmall = false;
-    }
-    console.log(`view is small ${isSmall}`)
-
 
     var socket = new WebSocket(
         'ws://' + window.location.host + '/ws/draw');
 
     tool.onMouseMove = function(event) { //http://paperjs.org/reference/tool/ path examples
+        // myPath.add(event.point);
        // You may need to add code here if you want to pass any other information.
-       if (isSmall) {
-            myPath.add(event.point);
-            const message = {
-            "x": event.point.x,
-            "y": event.point.y,
-            "uid": uid,
-            "color": chosenColor
-        }
-        socket.send(JSON.stringify(message));
+       const message = {
+           "x": event.point.x,
+           "y": event.point.y,
+           "uid": uid,
+           "color": chosenColor
        }
+       socket.send(JSON.stringify(message));
     }
 
     socket.onmessage = function(receivedMessage) {
-        if (!isSmall) {
-            var received = JSON.parse(receivedMessage.data);
-            console.log("Received: " + JSON.stringify(received));
-            var otherPath;
-            if (!(received.uid in paths)) {
-                otherPath = new paper.Path();
-                otherPath.strokeColor = received.color;
-                paths[received.uid] = otherPath;
-                console.log(paths)
-            }
+        var received = JSON.parse(receivedMessage.data);
+        console.log("Received: " + JSON.stringify(received));
+        var otherPath;
+        if (!(received.uid in paths)) {
+            otherPath = new paper.Path();
+            otherPath.strokeColor = received.color;
+            paths[received.uid] = otherPath;
             console.log(paths)
-            otherPath = paths[received.uid];
-            otherPath.add(new paper.Point(received.x, received.y))
-            // You will probably want to add some code here to draw more lines.
-        }        
+        }
+        console.log(paths)
+        otherPath = paths[received.uid];
+        otherPath.add(new paper.Point(received.x, received.y))
+        // You will probably want to add some code here to draw more lines.
     }
 
     socket.onclose = function(e) {
