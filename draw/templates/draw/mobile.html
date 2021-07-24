@@ -1,0 +1,35 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Check-In</title>
+
+    <link rel="stylesheet" type="text/css" href="{% static 'draw/vendor/bootstrap/css/bootstrap.min.css' %}">
+    <script type="text/javascript" src="{% static 'draw/vendor/jquery/jquery-3.3.1.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'draw/vendor/paper/paper-full.min.js' %}"></script>
+
+	<link rel="stylesheet" type="text/css" href="{% static 'draw/css/mobile.css' %}" />
+
+</head>
+<body class="text-center">
+    
+    <main class="form-signin">
+      <form>
+        <img class="mb-4" src="{% static 'draw/assets/summer.svg' %}" alt="" width="100">
+        <h1 class="h3 mb-3 fw-normal">Weekend Plans?</h1>
+        <div class="form-floating">
+            <input type="text" class="form-control" placeholder="Your Name" id="Name"></input>
+        </div>
+        <div class="form-floating">
+            <div class="input-group mb-3">
+                <textarea class="form-control" placeholder="What will you be doing this weekend...?" rows="4"></textarea>
+            </div>
+        </div>
+        <button class="w-100 btn btn-lg btn-primary" type="submit">Submit</button>
+      </form>
+    </main>
+
+  </body>
+</html>
