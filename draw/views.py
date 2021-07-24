@@ -11,3 +11,6 @@ def room(request, room_name):
 
 def mobile(request):
     return render(request, 'draw/mobile.html')
+
+def web(request):
+    return render(request, 'draw/web.html')
