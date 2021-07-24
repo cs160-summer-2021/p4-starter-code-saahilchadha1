@@ -17,6 +17,10 @@
 </head>
 <body class="text-center">  
     <main class="form-signin">
+        <div class="alert alert-success alert-dismissible fade" role="alert" id="alert">
+            <strong>Submitted!</strong> You should be able to see your response on the screen
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
         <img class="mb-4" src="{% static 'draw/assets/summer.svg' %}" alt="" width="100">
         <h1 class="h3 mb-3 fw-normal">Weekend Plans?</h1>
         <input type="text" class="form-control" placeholder="Your Name" id="Name" required></input>
@@ -36,6 +40,8 @@
     var socket = new WebSocket(
         'ws://' + window.location.host + '/ws/draw');
 
+    $("#alert").hide();
+
     $("#submit").click(function() {
         var name = $("#Name").val();
         var plans = $("#Plans").val();
@@ -45,7 +51,11 @@
                 "Plans": plans
             }
             socket.send(JSON.stringify(message));
+            $("#Name").val('');
+            $("#Plans").val('');
+            $("#alert").fadeTo(2000, 500).slideUp(500, function() {
+                $("#alert").slideUp(500);
+            });
         }
-        $('.form-signin').prepend('<div class="alert alert-success alert-dismissible fade show" role="alert"><strong>Submitted!</strong> You should be able to see your response on the screen<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
     })
 </script>
