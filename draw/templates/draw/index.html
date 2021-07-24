@@ -24,9 +24,13 @@
     var canvas = document.getElementById('myCanvas');
     paper.setup(canvas);
     var tool = new paper.Tool();
-    var path = new paper.Path();
+    var paths = {};
     var uid = Date.now() % 10000;
-    path.strokeColor = "red";
+    var myPath = new paper.Path()
+    paths[uid] = myPath;
+    const strokeColors = ["red", "blue", "green", "black", "purple", "pink", "orange", "yellow"];
+    const chosenColor = strokeColors[Math.floor(Math.random() * 8)];
+    myPath.strokeColor = chosenColor;
 
     // getting the URL (you may want to use for Exercise 3)
     var url = window.location.href;
@@ -35,14 +39,30 @@
         'ws://' + window.location.host + '/ws/draw');
 
     tool.onMouseMove = function(event) { //http://paperjs.org/reference/tool/ path examples
-       path.add(event.point);
+        // myPath.add(event.point);
        // You may need to add code here if you want to pass any other information.
-       socket.send("{\"x\" : " + event.point.x + ", \"y\" : " + event.point.y + ", \"uid\" : " + uid + "}" );
+       const message = {
+           "x": event.point.x,
+           "y": event.point.y,
+           "uid": uid,
+           "color": chosenColor
+       }
+       socket.send(JSON.stringify(message));
     }
 
     socket.onmessage = function(receivedMessage) {
         var received = JSON.parse(receivedMessage.data);
         console.log("Received: " + JSON.stringify(received));
+        var otherPath;
+        if (!(received.uid in paths)) {
+            otherPath = new paper.Path();
+            otherPath.strokeColor = received.color;
+            paths[received.uid] = otherPath;
+            console.log(paths)
+        }
+        console.log(paths)
+        otherPath = paths[received.uid];
+        otherPath.add(new paper.Point(received.x, received.y))
         // You will probably want to add some code here to draw more lines.
     }
 
