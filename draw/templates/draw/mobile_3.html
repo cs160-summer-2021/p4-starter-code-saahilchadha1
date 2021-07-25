@@ -22,17 +22,10 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
         <div class="alert alert-danger alert-dismissible fade" role="alert" id="alert-error">
-            Please fill out the name and message fields
+            Please fill out the mood field
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
         <img class="mb-4" src="{% static 'draw/assets/summer.svg' %}" alt="" width="100">
-        <h1 class="h3 mb-3 fw-normal">Weekend Plans?</h1>
-        <input type="text" class="form-control" placeholder="Your Name" id="Name" required></input>
-        <div class="form-floating">
-            <div class="input-group mb-3">
-                <textarea class="form-control" placeholder="What will you be doing this weekend...?" rows="4" id="Plans" required></textarea>
-            </div>
-        </div>
 
         <!--POLL FEATURE  -->
        
@@ -40,9 +33,9 @@
         <div class="form-floating">
             <div class="input-group mb-3">
                 <form class="form-control" id="Mood" required> 
-                <input type="radio" name="AppSource" value=1> Good <br>
-                <input type="radio" name="AppSource" value=2> Okay <br>
-                <input type="radio" name="AppSource" value=3> Bad <br>
+                <input type="radio" name="good"> 😄 <br>
+                <input type="radio" name="neutral"> 😑 <br>
+                <input type="radio" name="bad"> 😥 <br>
                 </form>
             </div>
         </div>
@@ -63,19 +56,12 @@
     $("#alert-error").hide()
 
     $("#submit").click(function() {
-        var name = $("#Name").val();
-        var plans = $("#Plans").val();
         var mood = $('#Mood').serialize();
-        console.log(name, plans, mood)
-        if (name && plans) {
+        if (mood) {
             const message = {
-                "Name": name,
-                "Plans": plans,
                 "Mood" : mood
             }
             socket.send(JSON.stringify(message));
-            $("#Name").val('');
-            $("#Plans").val('');
             $("#Mood").val('');
             $("#alert-success").fadeTo(2000, 500).slideUp(500, function() {
                 $("#alert-success").slideUp(500);

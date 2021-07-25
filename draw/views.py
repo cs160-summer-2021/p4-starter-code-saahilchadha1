@@ -9,8 +9,20 @@ def room(request, room_name):
         'room_name': room_name
     })
 
-def mobile(request):
-    return render(request, 'draw/mobile.html')
+def mobile_3(request):
+    return render(request, 'draw/mobile_3.html')
+
+def mobile_5(request):
+    return render(request, 'draw/mobile_5.html')
+
+def mobile_7(request):
+    return render(request, 'draw/mobile_7.html')
+
+def mobile_text(request):
+    return render(request, 'draw/mobile_text.html')
 
 def web(request):
     return render(request, 'draw/web.html')
+
+def test(request):
+    return render(request, 'draw/test.html')

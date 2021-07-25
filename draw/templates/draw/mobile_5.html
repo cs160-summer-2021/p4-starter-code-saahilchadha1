@@ -1,0 +1,75 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Check-In</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <script type="text/javascript" src="{% static 'draw/vendor/jquery/jquery-3.3.1.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'draw/vendor/paper/paper-full.min.js' %}"></script>
+
+	<link rel="stylesheet" type="text/css" href="{% static 'draw/css/mobile.css' %}" />
+</head>
+<body class="text-center">  
+    <main class="form-signin">
+        <div class="alert alert-success alert-dismissible fade" role="alert" id="alert-success">
+            <strong>Submitted!</strong> You should be able to see your response on the screen
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div class="alert alert-danger alert-dismissible fade" role="alert" id="alert-error">
+            Please fill out the mood field
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <img class="mb-4" src="{% static 'draw/assets/summer.svg' %}" alt="" width="100">
+
+        <!--POLL FEATURE  -->
+       
+        <h1 class="h3 mb-3 fw-normal">Current Mood: </h1>
+        <div class="form-floating">
+            <div class="input-group mb-3">
+                <form class="form-control" id="Mood" required> 
+                <input type="radio" name="good"> 😄 <br>
+                <input type="radio" name="moderately_good"> 🙂 <br>
+                <input type="radio" name="neutral"> 😑 <br>
+                <input type="radio" name="moderately_bad"> 😕 <br>
+                <input type="radio" name="bad"> 😥 <br>
+                </form>
+            </div>
+        </div>
+        <button class="w-100 btn btn-lg btn-primary" type="submit" id="submit">Submit</button>
+    </main>
+
+  </body>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+</html>
+
+<script>
+    var socket = new WebSocket(
+        'ws://' + window.location.host + '/ws/draw');
+
+    $("#alert-success").hide();
+    $("#alert-error").hide()
+
+    $("#submit").click(function() {
+        var mood = $('#Mood').serialize();
+        if (mood) {
+            const message = {
+                "Mood" : mood
+            }
+            socket.send(JSON.stringify(message));
+            $("#Mood").val('');
+            $("#alert-success").fadeTo(2000, 500).slideUp(500, function() {
+                $("#alert-success").slideUp(500);
+            });
+        } else {
+            $("#alert-error").fadeTo(2000, 500).slideUp(500, function() {
+                $("#alert-error").slideUp(500);
+            });
+        }
+    })
+</script>

@@ -12,62 +12,90 @@
     <script type="text/javascript" src="{% static 'draw/vendor/paper/paper-full.min.js' %}"></script>
 
 	<link rel="stylesheet" type="text/css" href="{% static 'draw/css/mobile.css' %}" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-colorschemes"></script>
+
 
 </head>
 <!-- POLL RESULTS -->
-<div id="piechart"></div>
 <body class="text-center">
     <main class="form-signin">
       <img class="mb-4" src="{% static 'draw/assets/summer.svg' %}" alt="" width="100">
       <h1 class="h3 mb-3 fw-normal">Our Weekend Plans!</h1>
       <div class="row row-cols-md-3" id="main">
       </div>
-
-      <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-
+      <div>
+        <canvas id="chart" height="150"></canvas>
+      </div>
     </main>
-
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   </body>
 </html>
 <script>
   var socket = new WebSocket(
         'ws://' + window.location.host + '/ws/draw');
-  var good=0; 
-  var okay=0; 
-  var bad=0;
+
+  var moods = {
+  }
+
+  var mappings = {
+    'extremely_good': '🤩',
+    'good': '😄',
+    'moderately_good': '🙂',
+    'neutral': '😑',
+    'moderately_bad': '😕',
+    'bad': '😥',
+    'extremely_bad': '💀'
+  }
+
+  var data = {
+    labels: Object.keys(moods),
+    datasets: [
+      {
+        label: 'Dataset 1',
+        data: Object.values(moods)
+      }
+    ]
+  }
+
+  let ctx = document.getElementById("chart").getContext("2d");
+
+  let chart = new Chart(ctx, {
+    type: "pie",
+    data: data,
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'top',
+        },
+        title: {
+          display: true,
+          text: 'Chart.js Pie Chart'
+        },
+        colorschemes: {
+          scheme: 'brewer.SetThree12'
+        }
+      }
+    }
+  });
   socket.onmessage = function(receivedMessage) {
     var received = JSON.parse(receivedMessage.data);
-
-    // LOAD GOOGLE CHARTS
-    google.charts.load("current", {"packages" :["corechart"]});
-    google.charts.setOnLoadCallback(drawChart);
-    function drawChart() {
-      var newMood= received.Mood;
-      if (newMood=='AppSource=1'){
-        good+=1;
-      } else if (newMood=='AppSource=2'){
-        okay+=1;
-      } else if (newMood=='AppSource=3'){
-        bad+=1;
+    if (received.Mood) {
+      var newMood= mappings[received.Mood.split('=')[0]];
+      if (!(newMood in moods)) {
+        moods[newMood] = 1;
+      } else {
+        moods[newMood] = moods[newMood] + 1;
       }
+      chart.data.labels =  Object.keys(moods)
+      chart.data.datasets[0].data = Object.values(moods)
+      chart.update()
+    } else {
+      var newCard = `<div class="col-md-4"><div class="card m-2"><div class="card-body"><h5 class="card-title">${received.Name}</h5>${received.Plans}</div></div></div>`
 
-      var data = google.visualization.arrayToDataTable([
-      ["Mood", "Count"],
-      ["Good", good],
-      ["Okay", okay], 
-      ["Bad", bad]
-    ]);
-      // Optional; add a title and set the width and height of the chart
-      var options = {"title":"Mood Check-In", "width":550, "height":400};
-      // Display the chart inside the <div> element with id="piechart"
-      var chart = new google.visualization.PieChart(document.getElementById("piechart"));
-      chart.draw(data, options);
+      $("#main").append(newCard)
     }
-
-    var newCard = `
-    <div class="col-md-4"><div class="card m-2"><div class="card-body"><h5 class="card-title">${received.Name}</h5>${received.Plans}</div></div></div>`
-
-    $("#main").append(newCard)
   }
 
 
