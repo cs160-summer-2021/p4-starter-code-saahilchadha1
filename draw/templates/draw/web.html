@@ -59,6 +59,7 @@
   }
 
   let ctx = document.getElementById("chart").getContext("2d");
+  Chart.defaults.global.defaultFontSize = 20;
 
   let chart = new Chart(ctx, {
     type: "pie",
