@@ -33,6 +33,21 @@
                 <textarea class="form-control" placeholder="What will you be doing this weekend...?" rows="4" id="Plans" required></textarea>
             </div>
         </div>
+
+        <!--POLL FEATURE  -->
+       
+        <h1 class="h3 mb-3 fw-normal">Current Mood: </h1>
+        <div class="form-floating">
+            <div class="input-group mb-3">
+                <form class="form-control" id="Mood" required> 
+                <input type="radio" name="AppSource" value=1> Good <br>
+                <input type="radio" name="AppSource" value=2> Okay <br>
+                <input type="radio" name="AppSource" value=3> Bad <br>
+                </form>
+            </div>
+        </div>
+
+
         <button class="w-100 btn btn-lg btn-primary" type="submit" id="submit">Submit</button>
     </main>
 
@@ -50,14 +65,18 @@
     $("#submit").click(function() {
         var name = $("#Name").val();
         var plans = $("#Plans").val();
+        var mood = $('#Mood').serialize();
+        console.log(name, plans, mood)
         if (name && plans) {
             const message = {
                 "Name": name,
-                "Plans": plans
+                "Plans": plans,
+                "Mood" : mood
             }
             socket.send(JSON.stringify(message));
             $("#Name").val('');
             $("#Plans").val('');
+            $("#Mood").val('');
             $("#alert-success").fadeTo(2000, 500).slideUp(500, function() {
                 $("#alert-success").slideUp(500);
             });
